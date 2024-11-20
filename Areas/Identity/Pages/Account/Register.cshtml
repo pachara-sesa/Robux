@@ -1,0 +1,262 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        background: linear-gradient(90deg, #4CAF50, #2196F3);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        color: white;
+    }
+
+    .form-control {
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+
+    .form-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .text-danger {
+        font-size: 0.85rem;
+        color: #e74c3c;
+        margin-top: 3px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #4CAF50, #2196F3);
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2196F3, #4CAF50);
+        }
+
+    .is-invalid {
+        border-color: #e74c3c;
+        box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+    }
+
+    .progress-bar {
+        transition: width 0.4s ease;
+    }
+
+    .weak {
+        background-color: #ff4d4d;
+    }
+
+    .fair {
+        background-color: #ffc107;
+    }
+
+    .strong {
+        background-color: #4caf50;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+        <div class="card-body">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                    <input asp-for="Input.FirstName" class="form-control" name="FirstName" required />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                    <input asp-for="Input.LastName" class="form-control" name="LastName" required />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.MobilePhone" class="form-label">Mobile Phone</label>
+                    <input asp-for="Input.MobilePhone" class="form-control" name="MobilePhone" required />
+                    <span asp-validation-for="Input.MobilePhone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.UserName" class="form-label">Username</label>
+                    <input asp-for="Input.UserName" class="form-control" name="UserName" required />
+                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.email" class="form-label">Email</label>
+                    <input asp-for="Input.email" class="form-control" name="Email" required />
+                    <span asp-validation-for="Input.email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="Password" name="Password" required>
+                    <div class="progress mt-2" style="height: 5px;">
+                        <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <span id="passwordHelp" class="form-text text-muted"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required>
+                    <span class="text-danger" id="confirmPasswordHelp"></span>
+                </div>
+
+
+                <div class="d-grid">
+                    <button id="registerSubmit" type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- jQuery Validation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+
+    <script>
+        $(document).ready(function() {
+    $('#Password').on('input', function() {
+        var password = $(this).val();
+        var strength = 0;
+
+        if (password.length > 6) strength += 20;
+        if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) strength += 20;
+        if (password.match(/([!,%,&,#,$,^,*,?,_,~])/)) strength += 20;
+        if (password.match(/(.*[a-z].*[A-Z])|(.*[A-Z].*[a-z])/)) strength += 20;
+        if (password.length > 12) strength += 20;
+
+        $('#passwordStrength').css('width', strength + '%');
+
+        if (strength < 40) {
+            $('#passwordStrength').addClass('bg-danger').removeClass('bg-warning').removeClass('bg-success');
+            $('#passwordHelp').text('Weak');
+        } else if (strength >= 40 && strength < 80) {
+            $('#passwordStrength').addClass('bg-warning').removeClass('bg-danger').removeClass('bg-success');
+            $('#passwordHelp').text('Moderate');
+        } else if (strength >= 80) {
+            $('#passwordStrength').addClass('bg-success').removeClass('bg-danger').removeClass('bg-warning');
+            $('#passwordHelp').text('Strong');
+        }
+    });
+
+    $('#ConfirmPassword').on('input', function() {
+        var confirmPassword = $(this).val();
+        var password = $('#Password').val();
+
+        if (confirmPassword !== password) {
+            $('#confirmPasswordHelp').text('Passwords do not match.');
+        } else {
+            $('#confirmPasswordHelp').text('');
+        }
+    });
+});
+        $(document).ready(function () {
+            $("#registerForm").validate({
+                rules: {
+                    FirstName: "required",
+                    LastName: "required",
+                    MobilePhone: {
+                        required: true,
+                        digits: true,
+                        minlength: 10,
+                        maxlength: 10,
+                    },
+                    UserName: "required",
+                    Email: {
+                        required: true,
+                        email: true
+                    },
+                    Password: {
+                        required: true,
+                        minlength: 6
+                    },
+                    ConfirmPassword: {
+                        required: true,
+                        equalTo: "[name='Password']"
+                    }
+                },
+                messages: {
+                    FirstName: "Please enter your first name",
+                    LastName: "Please enter your last name",
+                    MobilePhone: {
+                        required: "Please enter your mobile phone",
+                        digits: "Only digits are allowed",
+                        minlength: "Mobile phone must be 10 digits",
+                        maxlength: "Mobile phone must be 10 digits",
+                        pattern: "Please enter a valid Thai mobile number"
+                    },
+                    UserName: "Please enter your username",
+                    Email: {
+                        required: "Please enter your email",
+                        email: "Please enter a valid email address"
+                    },
+                    Password: {
+                        required: "Please enter your password",
+                        minlength: "Password must be at least 6 characters"
+                    },
+                    ConfirmPassword: {
+                        required: "Please confirm your password",
+                        equalTo: "Passwords do not match"
+                    }
+                },
+                errorClass: "text-danger",
+                highlight: function (element) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function (element) {
+                    $(element).removeClass("is-invalid");
+                },
+                submitHandler: function (form) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Registration Successful",
+                        text: "Your account has been registered successfully.",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        form.submit();
+                    });
+                }
+            });
+        });
+    </script>
+}

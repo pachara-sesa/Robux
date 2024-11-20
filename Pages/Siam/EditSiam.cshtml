@@ -1,0 +1,73 @@
+﻿@page
+@model AS3_1660706126.Pages.Siam.EditSiamModel
+@{
+}
+<br />
+<h2 class="text-center text-primary">✏️ Edit Item</h2>
+
+@if (Model.errorMessage.Length > 0)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>⚠️ @Model.errorMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<div class="container bg-light p-4 rounded" style="max-width: 700px;">
+    <form method="post">
+
+        <input type="hidden" name="itemid" value="@Model.stockInfo.itemid" />
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">📦 Item</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control border-primary" name="item" value="@Model.stockInfo.item" placeholder="Enter item name" required />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">🏬 StoreID</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control border-primary" name="storeid" value="@Model.stockInfo.storeid" placeholder="Enter store ID" required />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">🚚 Supplier</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control border-primary" name="supplier" value="@Model.stockInfo.supplier" placeholder="Enter supplier name" required />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">📊 Amount</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control border-primary" name="amount" value="@Model.stockInfo.amount" placeholder="Enter amount" required />
+            </div>
+        </div>
+
+        @if (Model.successMessage.Length > 0)
+        {
+            <div class="row mb-3">
+                <div class="col-sm-9">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>✅ @Model.successMessage</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row mb-3">
+            <div class="offset-sm-3 col-sm-3 d-grid">
+                <button type="submit" class="btn btn-primary">💾 Submit</button>
+            </div>
+
+            <div class="col-sm-3 d-grid">
+                <a class="btn btn-outline-primary" href="/Siam/IndexSiam" role="button">❌ Cancel</a>
+            </div>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,845 @@
+﻿@page
+@using Microsoft.Data.SqlClient
+@model AS3_1660706126.Pages.Email.IndexEmailModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Email List";
+}
+<meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+    /* Global Variables */
+    :root {
+        --primary: #4F46E5;
+        --primary-hover: #4338CA;
+        --bg-sidebar: #F9FAFB;
+        --text-dark: #1F2937;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+        background-color: var(--bg-sidebar);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .sidebar .list-group-item {
+            border: none;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--text-dark);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+            .sidebar .list-group-item i {
+                font-size: 1.25rem;
+            }
+
+            .sidebar .list-group-item:hover {
+                background-color: var(--primary);
+                color: white;
+                transform: translateX(4px);
+            }
+
+            .sidebar .list-group-item.active {
+                background-color: var(--primary);
+                color: white;
+                font-weight: 500;
+            }
+
+    /* Card & Table Styling */
+    .card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+        .table thead th {
+            background-color: #F3F4F6;
+            font-weight: 500;
+            padding: 1rem;
+            color: var(--text-dark);
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+            .table tbody tr:hover {
+                background-color: #F9FAFB;
+            }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+    /* Floating Button */
+    .floating-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 50%;
+        width: 3.5rem;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: none;
+    }
+
+        .floating-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+    /* Status Badges */
+    .badge {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+
+    .btn-secondary {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        background-color: #E5E7EB;
+        color: var(--text-dark);
+        border: none;
+    }
+
+    /* Checkbox Styling */
+    input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.25rem;
+        border: 2px solid #D1D5DB;
+        cursor: pointer;
+    }
+
+    /* Delete Button */
+    .btn-danger {
+        background-color: #EF4444;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Delete Icon */
+    .delete-icon {
+        color: #EF4444;
+        transition: var(--transition);
+    }
+
+        .delete-icon:hover {
+            color: #DC2626;
+        }
+
+    /* Responsive Table */
+    .table-responsive {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    /* Custom SweetAlert Styling */
+    .swal-custom-popup {
+        border-radius: 1rem;
+        padding: 2rem;
+        background: #FFFFFF;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .swal-custom-title {
+        font-size: 1.5rem;
+        color: #1F2937;
+        font-weight: 600;
+    }
+
+    .swal-custom-content {
+        color: #4B5563;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .swal-custom-confirm {
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 500 !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+        .swal-custom-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+        }
+
+    .swal-custom-cancel {
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 500 !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+        .swal-custom-cancel:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(107, 114, 128, 0.2);
+        }
+
+    /* Delete Icon Animation */
+    .delete-icon {
+        color: #EF4444;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .delete-icon:hover {
+            color: #DC2626;
+            transform: scale(1.1);
+        }
+
+        .delete-icon i {
+            font-size: 1.25rem;
+        }
+        /* Modal Styling */
+
+/* Form Controls */
+.input-group-text {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    color: #6B7280;
+    border-radius: 0.75rem 0 0 0.75rem !important;
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 0 0.75rem 0.75rem 0 !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background-color: #F3F4F6 !important;
+}
+
+textarea.form-control {
+    min-height: 200px;
+    resize: vertical;
+}
+
+/* Buttons */
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #4F46E5;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #4338CA;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.btn-light {
+    background-color: #F3F4F6;
+    border: none;
+    color: #4B5563;
+}
+
+.btn-light:hover {
+    background-color: #E5E7EB;
+    transform: translateY(-2px);
+}
+
+/* Loading State */
+.btn-primary.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-primary.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+    .sidebar {
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+
+/* Animation */
+.modal.fade .modal-dialog {
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+    #viewEmailModal .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #viewEmailModal .modal-header {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+    }
+
+    #viewEmailModal .modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    #viewEmailModal .modal-body {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    #viewEmailModal .text-muted {
+        font-weight: 600;
+    }
+
+    #viewEmailModal .modal-footer {
+        justify-content: flex-end;
+    }
+
+    #emailBody {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .sidebar .list-group-item:hover {
+        background-color: var(--primary-hover);
+        color: white;
+        transform: translateX(10px);
+        font-weight: bold;
+    }
+
+    .sidebar .list-group-item.active {
+        background-color: var(--primary);
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-danger:active {
+        transform: scale(0.95);
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+    }
+
+    .floating-btn {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+        .floating-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    .btn:active {
+        background-color: var(--primary-hover);
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: scale(0.95);
+    }
+</style>
+@if (User.Identity.IsAuthenticated)
+    {
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-sm-2">
+            <div class="sidebar">
+                <h5 class="mb-4">📂 เมนู</h5>
+                <div class="list-group">
+                    <a href="?page=inbox"
+                       class="list-group-item list-group-item-action @(Request.Query["page"] == "inbox" ? "active" : "")">
+                        <i class="bi bi-inbox-fill me-2 text-primary"></i> Inbox
+                    </a>
+                    <a href="?P=sent"
+                       class="list-group-item list-group-item-action @(Request.Query["P"] == "sent" ? "active" : "")">
+                        <i class="bi bi-send-fill me-2 text-warning"></i> Sent
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h2 class="my-4">📧 รายการอีเมล</h2>
+            <div class="card">
+                <div class="card-body">
+                    <!-- Floating Compose Button -->
+                    <a class="floating-btn" data-bs-toggle="modal" data-bs-target="#createEmailModal">
+                        ✍
+                    </a>
+                    <!-- Status Filter Buttons -->
+                    <div class="mb-4">
+                        <button class="btn btn-outline-primary me-2" onclick="filterEmailsByStatus('')">ทั้งหมด</button>
+                        <button class="btn btn-outline-success me-2" onclick="filterEmailsByStatus('อ่านแล้ว')">อ่านแล้ว</button>
+                        <button class="btn btn-outline-secondary" onclick="filterEmailsByStatus('ยังไม่ได้อ่าน')">ยังไม่ได้อ่าน</button>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="mb-4">
+                        <input type="text" id="searchEmails" class="form-control" placeholder="ค้นหาอีเมล..." onkeyup="filterEmails()">
+                    </div>
+
+                    <!-- Delete Selected Button -->
+                    <form method="post" asp-page-handler="DeleteSelectedEmails" id="deleteSelectedForm">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <button type="submit" class="btn btn-danger btn-sm d-none" id="deleteSelectedButton" onclick="return confirm('คุณต้องการลบอีเมลที่เลือกใช่หรือไม่?')">
+                                ลบที่เลือก
+                            </button>
+                        </div>
+
+                        <!-- Email Table -->
+                        <div class="table-responsive-md">
+                            <table class="table table-striped table-hover align-middle" id="emailTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 5%; text-align: center;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> เลือกทั้งหมด</th>
+                                        <th style="width: 25%;">ชื่อผู้ส่ง</th>
+                                        <th style="width: 35%;">หัวข้อ</th>
+                                        <th style="width: 15%;">วันที่</th>
+                                        <th style="width: 10%;">สถานะ</th>
+                                        <th style="width: 10%; text-align: center;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var email in Model.Emails)
+                                    {
+                                        <tr style="cursor: pointer;"
+                                            onclick="showEmailDetails('@Html.Encode(email.SenderName)', '@Html.Encode(email.Subject)', '@Html.Encode(email.DateSent.ToString("dd MMM yyyy"))', `@Html.Encode(email.Body)`, '@Html.Encode(email.Id)');">
+
+
+                                            <td style="text-align: center;">
+                                                <input type="checkbox" name="selectedEmails" value="@email.Id" class="email-checkbox" onclick="event.stopPropagation(); toggleDeleteButton();">
+                                            </td>
+
+                                            <td>@email.SenderName</td>
+                                            <td>@email.Subject</td>
+                                            <td>@email.DateSent.ToString("dd MMM yyyy HH:mm:ss")</td>
+                                            <td>
+                                                @if (email.IsRead == 1)
+                                                {
+                                                    <span class="badge bg-success">อ่านแล้ว</span>
+                                                }
+                                                else
+                                                {
+                                                    @if (string.IsNullOrEmpty(Request.Query["P"]))
+                                                    {
+                                                        <span class="badge bg-secondary">ยังไม่ได้อ่าน</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">ยังไม่ได้อ่าน</span>
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <form method="post" style="display:inline;">
+                                                    @if(string.IsNullOrEmpty(Request.Query["P"])){
+                                                        <a href="#" class="btn btn-link p-0 delete-icon"
+                                                        onclick="event.stopPropagation(); confirmDelete('@email.Id','DI')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    }
+                                                    else if (Request.Query["P"] == "DI")
+                                                    {
+                                                        <a href="#" class="btn btn-link p-0 delete-icon"
+                                                           onclick="event.stopPropagation(); confirmDelete('@email.Id','DI')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    }
+                                                    else if (Request.Query["P"] == "DS" || Request.Query["P"] == "sent")
+                                                    {
+                                                        <a href="#" class="btn btn-link p-0 delete-icon"
+                                                           onclick="event.stopPropagation(); confirmDelete('@email.Id','DS')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    }
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewEmailModal" tabindex="-1" aria-labelledby="viewEmailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-light">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewEmailModalLabel">รายละเอียดอีเมล</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-4 text-muted"><strong>ชื่อผู้ส่ง:</strong></div>
+                        <div class="col-8" id="emailSender"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 text-muted"><strong>หัวข้อ:</strong></div>
+                        <div class="col-8" id="emailSubject"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 text-muted"><strong>วันที่ส่ง:</strong></div>
+                        <div class="col-8" id="emailDate"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 text-muted"><strong>เนื้อหา:</strong></div>
+                        <div class="col-8" id="emailBody" style="max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <form method="post">
+                        @if (string.IsNullOrEmpty(Request.Query["P"]))
+                        {
+                            <input type="hidden" name="eid" id="emailId" value="">
+                            <input type="hidden" name="Pages" value="u">
+                            <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="eid" id="emailId" value="">
+                            <input type="hidden" name="Pages" value="u">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal สำหรับเขียนอีเมล -->
+<div class="modal fade" id="createEmailModal" tabindex="-1" aria-labelledby="createEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="createEmailModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>เขียนเมลใหม่
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" id="createEmailForm">
+                <div class="modal-body px-4 py-3">
+                    <input type="hidden" name="pade" value="1">
+                        @foreach (var user in Model.IUsersl)
+                        {
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text border-0 bg-light">
+                                        <i class="bi bi-send-fill"></i>
+                                    </span>
+                                    <input type="text"
+                                    class="form-control form-control-lg border-0 bg-light"
+                                    id="createEmailSender"
+                                    value="@user.Email"
+                                    placeholder="ชื่อผู้ส่ง"
+                                    disabled>
+                                </div>
+                            </div>
+                        }
+                        <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control form-control-lg border-0 bg-light"
+                                       id="createEmailRecipient"
+                                   name="CName"
+                                   placeholder="ชื่อผู้รับ"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light">
+                                <i class="bi bi-chat-square-text-fill"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control form-control-lg border-0 bg-light"
+                                   id="createEmailSubject"
+                                   name="CSubject"
+                                   placeholder="หัวข้อ"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light align-items-start pt-2">
+                                <i class="bi bi-text-paragraph"></i>
+                            </span>
+                            <textarea class="form-control form-control-lg border-0 bg-light"
+                                      id="createEmailBody"
+                                      rows="8"
+                                      name="CBody"
+                                      placeholder="เนื้อหาอีเมล"
+                                      required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <input type="hidden" name="Pages" value="c" />
+                    <button type="button"
+                            class="btn btn-light btn-lg px-4"
+                            data-bs-dismiss="modal">
+                        ยกเลิก
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary btn-lg px-4"
+                            onclick="sendEmail(event)">
+                        <i class="bi bi-send-fill me-2"></i>ส่งอีเมล
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+else
+{
+    Response.Redirect("/Identity/Account/Login");
+}
+
+
+
+<!-- อ้างอิงไฟล์ Bootstrap JavaScript -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function confirmDelete(emailId,p) {
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: "คุณต้องการลบอีเมลนี้ใช่หรือไม่?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'ใช่, ลบเลย',
+            cancelButtonText: 'ยกเลิก',
+            reverseButtons: true,
+            customClass: {
+                popup: 'swal-custom-popup',
+                title: 'swal-custom-title',
+                content: 'swal-custom-content',
+                confirmButton: 'swal-custom-confirm',
+                cancelButton: 'swal-custom-cancel'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // แสดงข้อความ "ลบสำเร็จ"
+                Swal.fire({
+                    title: 'ลบสำเร็จ!',
+                    text: "อีเมลนี้ถูกลบเรียบร้อยแล้ว.",
+                    icon: 'success',
+                    confirmButtonColor: '#4CAF50',
+                    confirmButtonText: 'ตกลง',
+                    customClass: {
+                        popup: 'swal-custom-popup',
+                        title: 'swal-custom-title',
+                        content: 'swal-custom-content',
+                        confirmButton: 'swal-custom-confirm'
+                    }
+                }).then(() => {
+                    // เมื่อผู้ใช้คลิก "ตกลง" ในข้อความ "ลบสำเร็จ"
+                    const row = document.querySelector(`[value="${emailId}"]`).closest('tr');
+                    if (row) {
+                        row.style.animation = 'fadeOut 1s forwards'; // ใช้แอนิเมชัน fade-out ก่อนลบแถว
+                        setTimeout(() => {
+                            row.remove(); // ลบแถวจาก DOM
+                            // เปลี่ยนเส้นทางหลังจากลบแถว
+                            if (p == "DS") {
+                                window.location.href = `?eid=${emailId}&P=${p}`;
+                            } else if (p == "DI") {
+                                window.location.href = `?eid=${emailId}&P=${p}`;
+                            }
+                        }, 1000); // ให้เวลาแอนิเมชัน fade-out เสร็จ
+                    }
+                });
+            }
+        });
+    }
+    s
+
+
+
+
+
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentLocation = window.location.href;
+            const menuItems = document.querySelectorAll('.list-group-item');
+
+            menuItems.forEach(item => {
+                if (item.href === currentLocation) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+        function filterEmails() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchEmails");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("emailTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                tdSender = tr[i].getElementsByTagName("td")[1];
+                tdSubject = tr[i].getElementsByTagName("td")[2];
+                tdStatus = tr[i].getElementsByTagName("td")[4];
+                if (tdSender || tdSubject || tdStatus) {
+                    txtValueSender = tdSender.textContent || tdSender.innerText;
+                    txtValueSubject = tdSubject.textContent || tdSubject.innerText;
+                    txtValueStatus = tdStatus.textContent || tdStatus.innerText;
+                    if (txtValueSender.toUpperCase().indexOf(filter) > -1 || txtValueSubject.toUpperCase().indexOf(filter) > -1 || txtValueStatus.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterEmailsByStatus(status) {
+            var table, tr, td, i, txtValue;
+            table = document.getElementById("emailTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                tdStatus = tr[i].getElementsByTagName("td")[4];
+                if (tdStatus) {
+                    txtValueStatus = tdStatus.textContent || tdStatus.innerText;
+                    if (status === "" || txtValueStatus.trim() === status) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    function sendEmail(event) {
+        event.preventDefault(); // ป้องกันการส่งฟอร์มทันที
+
+        // ดึงข้อมูลจากฟิลด์
+        const recipient = document.getElementById('createEmailRecipient').value.trim();
+        const subject = document.getElementById('createEmailSubject').value.trim();
+        const body = document.getElementById('createEmailBody').value.trim();
+
+        // ตรวจสอบข้อมูลว่ากรอกครบหรือไม่
+        if (!recipient || !subject || !body) {
+            Swal.fire({
+                title: 'ข้อมูลไม่ครบ!',
+                text: 'กรุณากรอกข้อมูลให้ครบทุกช่องก่อนส่งอีเมล.',
+                icon: 'warning',
+                confirmButtonText: 'ตกลง'
+            });
+            return; // หยุดการทำงานถ้าข้อมูลไม่ครบ
+        }
+
+        // แสดงข้อความยืนยันก่อนส่ง
+        Swal.fire({
+            title: 'คุณแน่ใจหรือไม่?',
+            text: "คุณต้องการส่งอีเมลนี้หรือไม่?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ส่ง',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // แสดงข้อความกำลังส่ง
+                Swal.fire({
+                    title: 'กำลังส่ง...',
+                    text: 'กรุณารอสักครู่',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // จำลองการส่งข้อมูล
+                setTimeout(() => {
+                    try {
+                        // แสดงข้อความสำเร็จ
+                        Swal.fire(
+                            'ส่งสำเร็จ!',
+                            'อีเมลถูกส่งเรียบร้อยแล้ว.',
+                            'success'
+                        ).then(() => {
+                            // ส่งฟอร์มหลังข้อความสำเร็จ
+                            document.getElementById('createEmailForm').submit();
+                        });
+                    } catch (error) {
+                        // แสดงข้อความข้อผิดพลาด
+                        Swal.fire(
+                            'เกิดข้อผิดพลาด!',
+                            'ไม่สามารถส่งอีเมลได้: ' + error.message,
+                            'error'
+                        );
+                    }
+                }, 1000); // รอ 1 วินาที
+            }
+        });
+    }
+
+
+
+    </script>
+
+
+  

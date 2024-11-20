@@ -1,0 +1,38 @@
+﻿@page
+@model AS3_1660706126.Pages.Siam.IndexSiamModel
+@{
+}
+
+<!-- Button with an emoji -->
+<a class="btn btn-primary btn-sm" href="/Siam/CreateSiam">➕ New item</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>🔢 Item ID</th>
+            <th>📦 Item</th>
+            <th>🏬 Store ID</th>
+            <th>🚚 Supplier ID</th>
+            <th>📊 Amount</th>
+            <th>📅 Created At</th>
+            <th>⚙️ Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.listStocks)
+        {
+            <tr>
+                <td>@item.itemid</td>
+                <td>@item.item</td>
+                <td>@item.storeid</td>
+                <td>@item.supplier</td>
+                <td>@item.amount</td>
+                <td>@item.create_at</td>
+                <td>
+                    <!-- Buttons with emojis for action -->
+                    <a class="btn btn-primary btn-sm" href="/Siam/EditSiam?itemid=@item.itemid">✏️ Edit</a>
+                    <a class="btn btn-danger btn-sm" href="/Siam/DeleteSiam?itemid=@item.itemid">🗑️ Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,105 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 1080px) {
+  html {
+    font-size: 16px;
+  }
+}
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+/* ปรับขนาดปุ่มลบที่เลือกให้เล็กลง */
+#deleteSelectedButton {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* ซ่อนไอคอนลบโดยใช้ visibility แทนการใช้ display */
+.delete-icon {
+    visibility: hidden; /* ซ่อนไอคอนแต่ยังคงพื้นที่อยู่ */
+    color: #dc3545; /* สีแดงสำหรับไอคอนลบ */
+    font-size: 1.2rem;
+}
+
+/* แสดงไอคอนลบเมื่อ hover ที่แถว */
+tr:hover .delete-icon {
+    visibility: visible; /* แสดงไอคอนเมื่อ hover */
+}
+
+/* เพิ่มระยะห่างและจัดรูปแบบของตารางให้เต็มความกว้าง */
+.table {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+    /* เพิ่มความสูงและการจัดวางแนวกลางสำหรับข้อความในเซลล์ */
+    .table td, .table th {
+        vertical-align: middle;
+    }
+
+/* เพิ่มสไตล์พื้นหลังและขอบของตารางเพื่อให้ดูชัดเจนขึ้น */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.email-checkbox {
+    width: 20px;
+    height: 20px;
+    margin: 5px; /* เพิ่มพื้นที่รอบๆ checkbox */
+    cursor: pointer; /* เปลี่ยนเคอร์เซอร์เป็น pointer */
+}
+
+.header-checkbox {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.floating-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .floating-btn:hover {
+        background-color: #0056b3;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-5px);
+        text-decoration: none;
+    }
+
+    .floating-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
